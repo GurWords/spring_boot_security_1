@@ -1,0 +1,46 @@
+Spring security - предоставляет удобный механизм настройки безопасности приложения. Настройка аутентификация, авторизация и т.д. Предоставляет механизмы защиты от атак.
+
+SecurityContextHolder - содержит контекст безопасности. Где можно получить текущего пользователя(Principal). Работает при помощи ThreadLocal. Поэтому методы работающие в текущем потоке имеют доступ.
+
+SecurityContext - содержит Authentication и может получить SecurityContextHolder.
+
+Authentication - предоставляет пользователя(Principal) с точки зрения SecurityContext.
+
+Granted Authority - предоставляет разрешения выданные пользователю в масштабе приложения.
+
+UserDetails - предоставляет необходимую информацию для построения Authentication из DAO.
+
+UserDetilsService - используется что-бы создать пользователя.
+
+Principal(пользователь) - хранится в Autentication.getPrincipal() и до аутентификации в getPrincipal() хранится имя пользователя. После аутентификации хранится пользователь в виде UserDetails.
+
+Аутентификация - это проверка, что пользователь тот за кого себя выдает.
+
+interface AuthenticationManager(Auth ...)  и его единственный метод authenticate() - занимается аутентификацией, делегируя проверку провайдером.
+
+AuthenticationaManager делегирует провайдеру извлечение данных.
+Провайдеры бывают разные и все зависит от типа данных.
+@EnableWebSecurity(debug = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter
+   @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                ....
+    }
+...
+}
+
+
+extends WebSecurityConfigurationAdapter - основной конфигурационный класс.
+
+1 - аутентификация - процесс что пользователь есть тот за кого себя выдает.
+2 - авторизация - это процесс определения прав аутентифицированного пользователя.
+
+Для аутентификации нужен AuthenticationManager у которого один метод Authentication authenucatio(); - тем самым вернет объект Authentication у которог можно получить principal(UserDetails).
+
+WebSecurityConfigurationAdapter предоставляет метод configure(AuthenticationManagerBuilder bui);
+AthenticationManagerBuilder позволит создатть AuthenticationManager.
+Для создания ему нужно предостваить провайдер который вернул UserDetails.
+есть два способа создать UserDatails:
+1 -impl UserDetailsService - loaduserdatails(name)
+2- impl AuthenticationAdapter  - Authentication authentication(Auth auth); - соответсвенно можно получить пользователя и сделать проверку auth.password == user.password.
